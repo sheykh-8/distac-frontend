@@ -1,25 +1,13 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { CornerDownLeft, Paperclip, Delete, Edit } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useForm } from "react-hook-form";
-import { NewMessageInput } from "./new-message-input";
-import { NewConversationModal } from "./new-conversation-modal";
-import { ConversationListItem } from "./conversation-list-item";
-import { DeleteModal } from "./delete-modal";
-import { MessageBubble } from "./message-bubble";
+import { NewMessageInput } from "@/components/new-message-input";
+import { NewConversationModal } from "@/components/new-conversation-modal";
+import { ConversationListItem } from "@/components/conversation-list-item";
+import { DeleteModal } from "@/components/delete-modal";
+import { MessageBubble } from "@/components/message-bubble";
 
 const ConversationLayout = () => {
   const [conversations, setConversations] = useState([
