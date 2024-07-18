@@ -1,6 +1,15 @@
 "use client";
-
 import Image from "next/image";
+import { useFirebase } from "@/hooks/useFirebase";
+import {
+  useAuthState,
+  useSignInWithGoogle,
+  useSignInWithEmailAndPassword,
+  useCreateUserWithEmailAndPassword,
+  useSignInWithGithub,
+  useSignOut
+} from "react-firebase-hooks/auth";
+import {useRouter} from "next/navigation"
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -8,15 +17,53 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 
+type AuthForm = {
+  email: string;
+  password: string;
+};
+
 export default function Dashboard() {
-  const form = useForm<{ email: string; password: string }>();
+  const form = useForm<AuthForm>();
   const [mode, setMode] = useState<"login" | "signup">("login");
+
+  const router = useRouter();
 
   const authActionLabel = mode === "login" ? "Login" : "Signup";
 
-  const handleSubmit = (data) => {
-    console.log(data);
+  // using react hook form to check the authentication state and handling google authentication and email authentication:
+  const { auth, signInWithGoogle } = useFirebase();
+  const [user, loading, error] = useAuthState(auth);
+  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+  // const [signInWithGoogle] = useSignInWithGoogle(auth);
+  const [createUserwithEmailHandler] = useCreateUserWithEmailAndPassword(auth);
+  const [signOut] = useSignOut(auth);
+
+  const handleSubmit = (data: AuthForm) => {
+    if (mode === "login") {
+      signInWithEmailAndPassword(data.email, data.password);
+    } else {
+      createUserwithEmailHandler(data.email, data.password);
+    }
   };
+
+  const handleSignInWithGoogle = () => {
+    console.log("clicking");
+    const res = signInWithGoogle();
+    res.then(console.log)
+  };
+
+  if (loading) {
+    // return a loading spinner
+    return null;
+  }
+
+  if (user) { 
+    return <div className="w-full lg:min-h-[100vh] flex items-center justify-center">
+      <Button onClick={() => {
+        signOut()
+      }}>Logout</Button>
+    </div>    
+  }
 
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
@@ -60,11 +107,15 @@ export default function Dashboard() {
               <Button type="submit" className="w-full">
                 {authActionLabel}
               </Button>
-              <Button variant="outline" className="w-full">
-                {authActionLabel} with Google
-              </Button>
             </div>
           </form>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleSignInWithGoogle}
+          >
+            {authActionLabel} with Google
+          </Button>
 
           <div className="mt-4 text-center text-sm">
             {mode === "login" ? "Don't" : "Already"} have an account?{" "}
