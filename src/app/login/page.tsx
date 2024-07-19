@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import Image from "next/image";
 import { useFirebase } from "@/hooks/useFirebase";
@@ -146,7 +147,7 @@ export default function Auth() {
         </div>
       </div>
       <div className="hidden bg-muted lg:block">
-        <Image
+        <img
           src="/landing.webp"
           alt="Image"
           width="1920"
