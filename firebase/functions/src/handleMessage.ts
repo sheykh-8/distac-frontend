@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import axios from "axios";
 
-const ORCHESTRATOR_URL = "https://us-central1-sheykh-c68e3.cloudfunctions.net/orchestrator";
+const ORCHESTRATOR_URL=process.env.ORCHESTRATOR_ADDRESS ?? "";
 
 const firestore = admin.firestore();
 
