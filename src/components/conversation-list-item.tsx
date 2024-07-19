@@ -5,8 +5,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Delete, Edit } from "lucide-react";
-
-type Conversation = { id: string; name: string; lastMessage: string };
+import { Conversation } from "@/models/Conversation";
 
 interface ConversationListItemProps {
   conv: Conversation;
@@ -34,8 +33,8 @@ export const ConversationListItem: React.FC<ConversationListItemProps> = ({
           className="cursor-pointer flex-grow"
           onClick={() => onSetActiveConversation(conv.id)}
         >
-          <h3 className="font-semibold text-gray-800">{conv.name}</h3>
-          <p className="text-sm text-gray-600 truncate">{conv.lastMessage}</p>
+          <h3 className="font-semibold text-gray-800">{conv.title}</h3>
+          <p className="text-sm text-gray-600 truncate"></p>
         </div>
         <div className="flex space-x-2">
           <Tooltip>

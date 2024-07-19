@@ -1,7 +1,9 @@
+import { Message } from "@/models/Message";
 import React from "react";
+import { AudioPlayer } from "./audio-player";
 
 interface MessageBubbleProps {
-  message: { id: string; text: string; sender: string };
+  message: Message;
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
@@ -9,17 +11,18 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     <div
       key={message.id}
       className={`flex ${
-        message.sender === "user" ? "justify-end" : "justify-start"
+        message.user === "bot" ? "justify-start" : "justify-end"
       }`}
     >
       <div
         className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl rounded-md p-3 shadow-md ${
-          message.sender === "user"
-            ? "bg-primary text-white"
-            : "bg-white text-gray-800"
+          message.user === "bot"
+            ? "bg-white text-gray-800"
+            : "bg-primary text-white"
         }`}
       >
-        {message.text}
+        {message.content}
+        {message.audio ? <AudioPlayer audioUrl={message.audio} filename="synthesized.wav" /> : null}
       </div>
     </div>
   );

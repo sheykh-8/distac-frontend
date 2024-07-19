@@ -6,5 +6,5 @@ export interface Message {
   content: string;
   audio: string;
   createdAt: Date;
-  senderId: string;
+  user: string;
 }

@@ -8,17 +8,28 @@ import { NewConversationModal } from "@/components/new-conversation-modal";
 import { ConversationListItem } from "@/components/conversation-list-item";
 import { DeleteModal } from "@/components/delete-modal";
 import { MessageBubble } from "@/components/message-bubble";
+import { Conversation as ConversationType } from "@/models/Conversation";
+import { Message } from "@/models/Message";
 
-const ConversationLayout = () => {
-  const [conversations, setConversations] = useState([
-    { id: "1", name: "Conversation 1", lastMessage: "Hello!" },
-    { id: "2", name: "Conversation 2", lastMessage: "How are you?" },
-  ]);
-  const [activeConversation, setActiveConversation] = useState("1");
-  const [messages, setMessages] = useState([
-    { id: "1", text: "Hello!", sender: "user" },
-    { id: "2", text: "Hi there! How can I help you today?", sender: "bot" },
-  ]);
+interface ConversationProps {
+  onNewConversation: (title: string) => Promise<void>;
+  onSubmitNewMessage: (content: string) => Promise<void>;
+  conversations: ConversationType[];
+  messages: Message[];
+  selectedConversation: string;
+  setSelectedConversation: (id: string) => void;
+}
+
+const Conversation: React.FC<ConversationProps> = ({
+  onNewConversation,
+  onSubmitNewMessage,
+  conversations = [],
+  messages = [],
+  selectedConversation,
+  setSelectedConversation,
+}) => {
+  // const [activeConversation, setActiveConversation] = useState("1");
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [isEditConversationModalOpen, setIsEditConversationModalOpen] =
@@ -28,8 +39,6 @@ const ConversationLayout = () => {
   const [isDeleteConversationModalOpen, setIsDeleteConversationModalOpen] =
     useState(false);
   const [newConversationTitle, setNewConversationTitle] = useState("");
-  const [editingConversation, setEditingConversation] = useState(null as any);
-  const [deletingConversation, setDeletingConversation] = useState(null as any);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -39,68 +48,42 @@ const ConversationLayout = () => {
 
   const handleSendMessage = (input: string) => {
     if (input.trim() !== "") {
-      setMessages([
-        ...messages,
-        { id: (messages.length + 1).toString(), text: input, sender: "user" },
-      ]);
-    }
-    return new Promise<void>((resolve) => {
-      setTimeout(() => resolve(), 1000);
-    });
-  };
-
-  const handleCreateNewConversation = (title: string) => {
-    if (title.trim() !== "") {
-      const newId = conversations.length + 1;
-      setConversations([
-        ...conversations,
-        {
-          id: newId.toString(),
-          name: newConversationTitle,
-          lastMessage: "New conversation",
-        },
-      ]);
-      setActiveConversation(newId.toString());
-      setMessages([]);
-      setIsNewConversationModalOpen(false);
-      setNewConversationTitle("");
+      return onSubmitNewMessage(input);
     }
     return Promise.resolve();
   };
 
-  const modalRef = useRef<HTMLDivElement>(null);
+  const handleCreateNewConversation = (title: string) => {
+    if (title.trim() !== "") {
+      return onNewConversation(title);
+    }
+    return Promise.resolve();
+  };
 
-  const handleEditConversation = (conversation: any) => {
-    setEditingConversation(conversation);
-    setNewConversationTitle(conversation.name);
+  const handleEditConversation = (conversation: ConversationType) => {
+    setNewConversationTitle(conversation.title);
     setIsEditConversationModalOpen(true);
   };
 
   const handleUpdateConversation = (title: string) => {
     if (title.trim() !== "") {
-      setConversations(
-        conversations.map((conv) =>
-          conv.id === editingConversation.id ? { ...conv, name: title } : conv
-        )
-      );
     }
     return Promise.resolve();
   };
 
   const handleDeleteConversation = (conversation: any) => {
-    setDeletingConversation(conversation);
     setIsDeleteConversationModalOpen(true);
   };
 
   const confirmDeleteConversation = () => {
-    setConversations(
-      conversations.filter((conv) => conv.id !== deletingConversation.id)
-    );
-    if (activeConversation === deletingConversation.id) {
-      setActiveConversation(conversations[0]?.id);
-      setMessages([]);
-    }
-    setIsDeleteConversationModalOpen(false);
+    // setConversations(
+    //   conversations.filter((conv) => conv.id !== deletingConversation.id)
+    // );
+    // if (activeConversation === deletingConversation.id) {
+    //   setActiveConversation(conversations[0]?.id);
+    //   setMessages([]);
+    // }
+    // setIsDeleteConversationModalOpen(false);
     return Promise.resolve();
   };
 
@@ -121,9 +104,9 @@ const ConversationLayout = () => {
             <ConversationListItem
               key={conv.id}
               conv={conv}
-              activeConversation={activeConversation}
+              activeConversation={selectedConversation}
               onSetActiveConversation={(id) => {
-                setActiveConversation(id);
+                setSelectedConversation(id);
               }}
               onEditConversation={() => {
                 handleEditConversation(conv);
@@ -181,4 +164,4 @@ const ConversationLayout = () => {
   );
 };
 
-export default ConversationLayout;
+export default Conversation;
