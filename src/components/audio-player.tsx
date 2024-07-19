@@ -76,7 +76,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         <div
           ref={waveformRef}
           className="flex-grow"
-          style={{ width: "100px" }}
+          style={{ width: "100px", zIndex: 0 }}
         />
         <Button
           variant={"ghost"}

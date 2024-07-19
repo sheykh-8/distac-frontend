@@ -77,13 +77,13 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div ref={modalRef} className="bg-white rounded-lg p-6 w-96">
             <h2 className="text-xl font-semibold mb-4">
-              {edit ? "Edit Conversation" : "New Conversation"}
+              {edit ? "Edit Sequence" : "New Sequence"}
             </h2>
             <input
               type="text"
               value={newConversationTitle}
               onChange={(e) => setNewConversationTitle(e.target.value)}
-              placeholder="Enter conversation title"
+              placeholder="Enter sequence title"
               className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <div className="flex justify-end space-x-2">

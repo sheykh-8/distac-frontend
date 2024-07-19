@@ -15,6 +15,10 @@ export default function Dashbaord() {
       messages={conversation.messageList}
       selectedConversation={conversation.selectedConversation}
       setSelectedConversation={(id) => conversation.setSelectedConversation(id)}
+      onDeleteConversation={(id) => conversation.deleteConversation(id)}
+      onEditConversation={(id, title) =>
+        conversation.renameConversation(id, title)
+      }
     />
   );
 }

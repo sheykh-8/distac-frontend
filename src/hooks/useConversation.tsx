@@ -12,11 +12,13 @@ import { useFirebase } from "@/hooks/useFirebase";
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   orderBy,
   Query,
   query,
   QuerySnapshot,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import {
@@ -64,8 +66,8 @@ export const useConversation = () => {
           collection(
             doc(firestore, CONVERSATION_COLLECTION, selectedConversation),
             MESSAGE_COLLECTION
-          )
-          // orderBy("createdAt", "desc")
+          ),
+          orderBy("createdAt", "asc")
         ).withConverter(messageConverter)
       );
     }
@@ -111,6 +113,22 @@ export const useConversation = () => {
     await addDoc(reference, newMessage);
   }
 
+  async function deleteConversation(conversationId: string) {
+    if (!user) {
+      throw new Error("not authenticated");
+    }
+    const reference = doc(firestore, CONVERSATION_COLLECTION, conversationId);
+    await deleteDoc(reference);
+  }
+
+  async function renameConversation(conversationId: string, title: string) {
+    if (!user) {
+      throw new Error("not authenticated");
+    }
+    const reference = doc(firestore, CONVERSATION_COLLECTION, conversationId);
+    await updateDoc(reference, { title });
+  }
+
   return {
     conversationList: (conversations?.docs ?? []).map(
       (doc) => doc.data() as Conversation
@@ -122,5 +140,7 @@ export const useConversation = () => {
     setSelectedConversation,
     addNewConversation,
     submitMessage,
+    deleteConversation,
+    renameConversation
   };
 };

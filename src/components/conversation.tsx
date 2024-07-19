@@ -18,6 +18,8 @@ interface ConversationProps {
   messages: Message[];
   selectedConversation: string;
   setSelectedConversation: (id: string) => void;
+  onDeleteConversation: (id: string) => Promise<void>;
+  onEditConversation: (id: string, title: string) => Promise<void>;
 }
 
 const Conversation: React.FC<ConversationProps> = ({
@@ -27,17 +29,19 @@ const Conversation: React.FC<ConversationProps> = ({
   messages = [],
   selectedConversation,
   setSelectedConversation,
+  onDeleteConversation,
+  onEditConversation,
 }) => {
   // const [activeConversation, setActiveConversation] = useState("1");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [isEditConversationModalOpen, setIsEditConversationModalOpen] =
-    useState(false);
+  const [covnersationToBeEdit, setConversationToBeEdit] =
+    useState<ConversationType | null>(null);
   const [isNewConversationModalOpen, setIsNewConversationModalOpen] =
     useState(false);
   const [isDeleteConversationModalOpen, setIsDeleteConversationModalOpen] =
-    useState(false);
+    useState<ConversationType | null>(null);
   const [newConversationTitle, setNewConversationTitle] = useState("");
 
   const scrollToBottom = () => {
@@ -62,17 +66,18 @@ const Conversation: React.FC<ConversationProps> = ({
 
   const handleEditConversation = (conversation: ConversationType) => {
     setNewConversationTitle(conversation.title);
-    setIsEditConversationModalOpen(true);
+    setConversationToBeEdit(conversation);
   };
 
   const handleUpdateConversation = (title: string) => {
-    if (title.trim() !== "") {
+    if (title.trim() !== "" && covnersationToBeEdit) {
+      return onEditConversation(covnersationToBeEdit.id, title);
     }
     return Promise.resolve();
   };
 
-  const handleDeleteConversation = (conversation: any) => {
-    setIsDeleteConversationModalOpen(true);
+  const handleDeleteConversation = (conversation: ConversationType) => {
+    setIsDeleteConversationModalOpen(conversation);
   };
 
   const confirmDeleteConversation = () => {
@@ -84,6 +89,9 @@ const Conversation: React.FC<ConversationProps> = ({
     //   setMessages([]);
     // }
     // setIsDeleteConversationModalOpen(false);
+    if (isDeleteConversationModalOpen) {
+      return onDeleteConversation(isDeleteConversationModalOpen.id);
+    }
     return Promise.resolve();
   };
 
@@ -96,7 +104,7 @@ const Conversation: React.FC<ConversationProps> = ({
             onClick={() => setIsNewConversationModalOpen(true)}
             className="w-full text-white px-4 py-2 rounded-lg focus:outline-none transition duration-200"
           >
-            New Conversation
+            New Sequence
           </Button>
         </div>
         <div className="flex-1 overflow-y-auto">
@@ -132,7 +140,7 @@ const Conversation: React.FC<ConversationProps> = ({
           }}
         />
       </div>
-      {(isNewConversationModalOpen || isEditConversationModalOpen) && (
+      {(isNewConversationModalOpen || covnersationToBeEdit) && (
         <NewConversationModal
           open={true}
           title={newConversationTitle}
@@ -143,7 +151,7 @@ const Conversation: React.FC<ConversationProps> = ({
             return handleCreateNewConversation(title);
           }}
           onCancel={function (): void {
-            setIsEditConversationModalOpen(false);
+            setConversationToBeEdit(null);
             setIsNewConversationModalOpen(false);
             setNewConversationTitle("");
           }}
@@ -155,9 +163,13 @@ const Conversation: React.FC<ConversationProps> = ({
         <DeleteModal
           open={true}
           onCancel={() => {
-            setIsDeleteConversationModalOpen(false);
+            setIsDeleteConversationModalOpen(null);
           }}
-          onConfirm={() => confirmDeleteConversation()}
+          onConfirm={() =>
+            confirmDeleteConversation().finally(() =>
+              setIsDeleteConversationModalOpen(null)
+            )
+          }
         />
       )}
     </div>
