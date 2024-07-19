@@ -16,13 +16,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 type AuthForm = {
   email: string;
   password: string;
 };
 
-export default function Dashboard() {
+export default function Auth() {
   const form = useForm<AuthForm>();
   const [mode, setMode] = useState<"login" | "signup">("login");
 
@@ -54,20 +55,28 @@ export default function Dashboard() {
 
   if (loading) {
     // return a loading spinner
-    return null;
+    return <LoadingSpinner />
   }
 
   if (user) { 
-    return <div className="w-full lg:min-h-[100vh] flex items-center justify-center">
-      <Button onClick={() => {
-        signOut()
-      }}>Logout</Button>
-    </div>    
+    return (
+      <div className="w-full min-h-screen flex flex-col items-center justify-center space-y-6">
+        <h1 className="text-3xl font-bold">Welcome, {user.email}!</h1>
+        <Button onClick={() => router.push('/dashboard')}>
+          Continue to Dashboard
+        </Button>
+        <Button variant="outline" onClick={() => signOut()}>
+          Logout
+        </Button>
+      </div>
+    );
   }
 
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
       <div className="flex items-center justify-center py-12">
+
+        {/* Not Authenticated */}
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold">{authActionLabel}</h1>
@@ -137,13 +146,13 @@ export default function Dashboard() {
         </div>
       </div>
       <div className="hidden bg-muted lg:block">
-        {/* <Image
-          src="/placeholder.svg"
+        <Image
+          src="/landing.webp"
           alt="Image"
           width="1920"
           height="1080"
           className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        /> */}
+        />
       </div>
     </div>
   );
