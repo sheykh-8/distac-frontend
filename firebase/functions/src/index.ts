@@ -14,6 +14,9 @@
 //   logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
+import * as admin from "firebase-admin";
+
+admin.initializeApp();
 
 import {handleMessage} from "./handleMessage";
 
