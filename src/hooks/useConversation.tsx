@@ -59,6 +59,8 @@ export const useConversation = () => {
   const [conversationMessages, messageLoading, messageError] =
     useCollection(messageQuery);
 
+  console.log("messages error", messageError)
+
   useEffect(() => {
     if (selectedConversation) {
       setMessageQuery(
@@ -111,6 +113,19 @@ export const useConversation = () => {
     ).withConverter(messageConverter);
 
     await addDoc(reference, newMessage);
+
+    console.log("messages", conversationMessages);
+    if (!conversationMessages || conversationMessages.empty) {
+      setMessageQuery(
+        query(
+          collection(
+            doc(firestore, CONVERSATION_COLLECTION, selectedConversation),
+            MESSAGE_COLLECTION
+          ),
+          orderBy("createdAt", "asc")
+        ).withConverter(messageConverter)
+      );
+    }
   }
 
   async function deleteConversation(conversationId: string) {
@@ -141,6 +156,6 @@ export const useConversation = () => {
     addNewConversation,
     submitMessage,
     deleteConversation,
-    renameConversation
+    renameConversation,
   };
 };
