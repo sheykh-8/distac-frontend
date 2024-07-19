@@ -38,7 +38,7 @@ export const handleMessage = functions.firestore
       conversationRef.add({
         audio: url,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        user: value.user,
+        user: "bot",
       });
     } catch (error) {
       console.error("Error processing audio:", error);
